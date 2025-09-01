@@ -153,6 +153,237 @@
   </div>
 </section>
 
+<section class="section">
+  <div class="viewer-container">
+    <div id="canvas-container">
+        <div class="loading-overlay" id="loading-overlay">
+            <div class="spinner"></div>
+            Loading point cloud data...
+        </div>
+        <canvas id="canvas"></canvas>
+    </div>
+    
+    <div class="controls">
+        <button class="control-btn" id="reset-view">Reset View</button>
+    </div>
+  </div>
+
+  <div class="thumbnail-bar">
+    <img src="https://placehold.co/120x90/3498db/ffffff?text=Scene+1" alt="Scene 1" class="thumbnail active" data-ply="https://raw.githubusercontent.com/potree/potree/master/pointclouds/lion_takanawa/cloud.js">
+    <img src="https://placehold.co/120x90/e74c3c/ffffff?text=Scene+2" alt="Scene 2" class="thumbnail" data-ply="https://raw.githubusercontent.com/potree/potree/master/pointclouds/dragon/cloud.js">
+    <img src="https://placehold.co/120x90/2ecc71/ffffff?text=Scene+3" alt="Scene 3" class="thumbnail" data-ply="https://raw.githubusercontent.com/potree/potree/master/pointclouds/pointclouds/vol_total/cloud.js">
+    <img src="https://placehold.co/120x90/f39c12/ffffff?text=Scene+4" alt="Scene 4" class="thumbnail" data-ply="https://raw.githubusercontent.com/potree/potree/master/pointclouds/guangzhou/cloud.js">
+    <img src="https://placehold.co/120x90/9b59b6/ffffff?text=Scene+5" alt="Scene 5" class="thumbnail" data-ply="https://raw.githubusercontent.com/potree/potree/master/pointclouds/matthias/cloud.js">
+  </div>
+
+  <div class="info-panel">
+    <h2>Interaction Guide</h2>
+    <p>This viewer is designed for colored point clouds, with all points rendered using their original RGB data:</p>
+    <ul>
+        <li><strong>Rotate view</strong>: Left-click and drag</li>
+        <li><strong>Pan view</strong>: Right-click and drag</li>
+        <li><strong>Zoom view</strong>: Use mouse wheel</li>
+        <li><strong>Reset view</strong>: Click "Reset View" button above</li>
+        <li><strong>Switch scene</strong>: Click any thumbnail below</li>
+    </ul>
+    <p>Points are rendered using Three.js PointsMaterial with vertexColors enabled to preserve original RGB data.</p>
+  </div>
+
+  <footer>
+    <p>Point Cloud Visualization System &copy; 2025 | Built with Three.js</p>
+  </footer>
+
+  <!-- Three.js Core Library -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
+  <!-- Orbit Controls -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/controls/OrbitControls.js"></script>
+  <!-- PLY Loader -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/loaders/PLYLoader.js"></script>
+
+  <script>
+    // Main application logic
+    document.addEventListener('DOMContentLoaded', function() {
+        // Core variables
+        let scene, camera, renderer, controls;
+        let pointCloud = null;
+        const thumbnailBar = document.querySelector('.thumbnail-bar');
+        const loadingOverlay = document.getElementById('loading-overlay');
+        
+        // Initialize Three.js scene
+        function init() {
+            // Create scene with white background
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0xffffff);
+            
+            // Create camera
+            camera = new THREE.PerspectiveCamera(75, 
+                document.getElementById('canvas-container').offsetWidth / 
+                document.getElementById('canvas-container').offsetHeight, 
+                0.1, 1000);
+            camera.position.z = 3;
+            
+            // Create renderer
+            renderer = new THREE.WebGLRenderer({ 
+                canvas: document.getElementById('canvas'),
+                antialias: true,
+                alpha: true
+            });
+            renderer.setSize(
+                document.getElementById('canvas-container').offsetWidth,
+                document.getElementById('canvas-container').offsetHeight
+            );
+            renderer.setPixelRatio(window.devicePixelRatio);
+            
+            // Add orbit controls
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            controls.enableRotate = true;
+            controls.enableZoom = true;
+            controls.enablePan = true;
+            
+            // Add ambient light
+            const ambientLight = new THREE.AmbientLight(0x404040);
+            scene.add(ambientLight);
+            
+            // Add directional light
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.6);
+            directionalLight.position.set(1, 1, 1).normalize();
+            scene.add(directionalLight);
+            
+            // Load initial point cloud
+            loadPointCloud(document.querySelector('.thumbnail.active').getAttribute('data-ply'));
+            
+            // Start animation loop
+            animate();
+            
+            // Handle window resize
+            window.addEventListener('resize', onWindowResize);
+        }
+        
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            renderer.render(scene, camera);
+        }
+        
+        // Window resize handler
+        function onWindowResize() {
+            camera.aspect = 
+                document.getElementById('canvas-container').offsetWidth / 
+                document.getElementById('canvas-container').offsetHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(
+                document.getElementById('canvas-container').offsetWidth,
+                document.getElementById('canvas-container').offsetHeight
+            );
+        }
+        
+        // Load point cloud
+        function loadPointCloud(url) {
+            loadingOverlay.style.display = 'flex';
+            
+            // Remove existing point cloud
+            if (pointCloud) {
+                scene.remove(pointCloud);
+                pointCloud = null;
+            }
+            
+            // Create loader
+            const loader = new THREE.PLYLoader();
+            
+            // Load point cloud
+            loader.load(
+                url,
+                function(geometry) {
+                    // Ensure vertex colors are used
+                    if (geometry.attributes.color) {
+                        // Create material with vertex colors enabled
+                        const material = new THREE.PointsMaterial({
+                            size: 0.005,
+                            vertexColors: true, // Use vertex colors
+                            sizeAttenuation: true
+                        });
+                        
+                        // Create point cloud object
+                        pointCloud = new THREE.Points(geometry, material);
+                        
+                        // Auto-center point cloud
+                        geometry.computeBoundingSphere();
+                        const center = geometry.boundingSphere.center;
+                        
+                        // Adjust camera position
+                        const radius = geometry.boundingSphere.radius;
+                        camera.position.copy(center);
+                        camera.position.z += radius * 2;
+                        controls.target.copy(center);
+                        controls.update();
+                        
+                        // Add to scene
+                        scene.add(pointCloud);
+                        
+                        // Hide loading overlay
+                        setTimeout(() => {
+                            loadingOverlay.style.display = 'none';
+                        }, 500);
+                    } else {
+                        console.warn("Point cloud contains no color data");
+                        loadingOverlay.innerHTML = "Point cloud contains no color information";
+                    }
+                },
+                // Loading progress callback
+                function(xhr) {
+                    console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+                },
+                // Error handling
+                function(error) {
+                    console.error('Error loading point cloud:', error);
+                    loadingOverlay.innerHTML = "Loading failed, please try again or select another scene";
+                }
+            );
+        }
+        
+        // Event listeners
+        document.getElementById('reset-view').addEventListener('click', function() {
+            if (pointCloud) {
+                // Reset controls
+                controls.reset();
+                
+                // Reset point cloud position
+                pointCloud.rotation.set(0, 0, 0);
+                pointCloud.position.set(0, 0, 0);
+                
+                // Reset camera position
+                const geometry = pointCloud.geometry;
+                geometry.computeBoundingSphere();
+                const center = geometry.boundingSphere.center;
+                const radius = geometry.boundingSphere.radius;
+                
+                camera.position.copy(center);
+                camera.position.z += radius * 2;
+                controls.target.copy(center);
+                controls.update();
+            }
+        });
+        
+        // Thumbnail click events
+        thumbnailBar.querySelectorAll('.thumbnail').forEach(thumb => {
+            thumb.addEventListener('click', function() {
+                // Update active state
+                thumbnailBar.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Load new point cloud
+                loadPointCloud(this.getAttribute('data-ply'));
+            });
+        });
+        
+        // Initialize application
+        init();
+    });
+  </script>
+</section>
 
 <section class="section">
   <div class="container is-max-desktop">
