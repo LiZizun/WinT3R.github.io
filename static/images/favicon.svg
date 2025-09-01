@@ -1,5 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
-  <rect x="64" y="64" width="384" height="384" fill="none" stroke="#2c3e50" stroke-width="16"/>
+  <!-- 窗框 -->
+  <rect x="64" y="64" width="384" height="384" fill="none" stroke="#2c3e50" stroke-width="16" stroke-linejoin="round"/>
+  
+  <!-- 窗格 -->
   <line x1="64" y1="256" x2="448" y2="256" stroke="#2c3e50" stroke-width="8"/>
   <line x1="256" y1="64" x2="256" y2="448" stroke="#2c3e50" stroke-width="8"/>
+  
+  <!-- 彩色玻璃 -->
+  <rect x="80" y="80" width="176" height="176" fill="#3498db" opacity="0.6"/>
+  <rect x="272" y="80" width="176" height="176" fill="#e74c3c" opacity="0.6"/>
+  <rect x="80" y="272" width="176" height="176" fill="#f1c40f" opacity="0.6"/>
+  <rect x="272" y="272" width="176" height="176" fill="#2ecc71" opacity="0.6"/>
 </svg>
