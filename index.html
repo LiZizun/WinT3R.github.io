@@ -371,6 +371,23 @@
          alt="Interpolation end reference image."/>
     </div>
   </div>
+
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <div class="content has-text-justified">
+          <p>
+            We detail the reconstruction process within a single window. All images first pass through a frame-wise ViT encoder, 
+            which outputs image tokens. Camera tokens are then appended to these tokens. Then the tokens within this window are 
+            collectively fed into a decoder to interact with state tokens. Finally, the image tokens output by the decoder are 
+            sent to a lightweight convolutional head to predict local point maps. Meanwhile, the camera tokens, along with those 
+            in the camera token pool, are jointly fed into a camera head to predict camera parameters, while these camera tokens 
+            are simultaneously added to the camera token pool.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
 </section>
 
 <section class="section">
