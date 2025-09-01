@@ -348,12 +348,37 @@
 
 <section class="section">
   <div class="container is-max-desktop">
+    <!-- Abstract. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Method</h2>
+        <div class="content has-text-justified">
+          <p>
+            Given an image stream, WinT3R processes input images in a sliding-window manner, where adjacent windows overlap by half of the window size. 
+            Our model generates extremely compact camera tokens during online reconstruction to serve as global information for historical frames. 
+            This enables the reconstructions of subsequent windows to leverage these global cues for more accurate results. 
+          </p>
+        </div>
+      </div>
+    </div>
+    <!--/ Abstract. -->
+  </div>
+
+  <div class="column is-3 has-text-centered">
+    <img src="./static/images/pipeline.jpg"
+         class="interpolation-image"
+         alt="Interpolation end reference image."/>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
     <div class="columns is-centered has-text-centered">
       <div class="column is-four-fifths">
         <h2 class="title is-3">Qualitative Visualization</h2>
         <div class="content has-text-justified">
           <p>
-              Interactive viewer for colored point clouds - Click thumbnails below to view the 3D reconstruction.
+            Interactive viewer for colored point clouds - Click thumbnails below to view the 3D reconstruction.
           </p>
         </div>
       </div>
