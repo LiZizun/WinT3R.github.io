@@ -4,11 +4,14 @@ This is the repository that contains source code for the [WinT3R website](https:
 
 If you find WinT3R useful for your work please cite:
 ```
-@article{park2021nerfies
-  author    = {Park, Keunhong and Sinha, Utkarsh and Barron, Jonathan T. and Bouaziz, Sofien and Goldman, Dan B and Seitz, Steven M. and Martin-Brualla, Ricardo},
-  title     = {Nerfies: Deformable Neural Radiance Fields},
-  journal   = {ICCV},
-  year      = {2021},
+@misc{li2025wint3rwindowbasedstreamingreconstruction,
+      title={WinT3R: Window-Based Streaming Reconstruction with Camera Token Pool}, 
+      author={Zizun Li and Jianjun Zhou and Yifan Wang and Haoyu Guo and Wenzheng Chang and Yang Zhou and Haoyi Zhu and Junyi Chen and Chunhua Shen and Tong He},
+      year={2025},
+      eprint={2509.05296},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/2509.05296}, 
 }
 ```
 
